@@ -11,8 +11,6 @@
 \usetikzlibrary{fit}
 \usetikzlibrary{decorations.pathmorphing}
 
-\definecolor{diagrambg}{HTML}{ffffff}
-
 \tikzset{curve/.style={settings={#1},to path={(\tikztostart)
     .. controls ($(\tikztostart)!\pv{pos}!(\tikztotarget)!\pv{height}!270:(\tikztotarget)$)
     and ($(\tikztostart)!1-\pv{pos}!(\tikztotarget)!\pv{height}!270:(\tikztotarget)$)
@@ -55,6 +53,23 @@
 \ExplSyntaxOff
 
 __PREAMBLE__
+
+\ifdefined\labdark
+\definecolor{diagrambg}{HTML}{282C34}
+\definecolor{diagramfg}{HTML}{ABB2BF}
+
+\definecolor{diagramshaded}{HTML}{2b6253}
+\definecolor{diagramshadedtext}{HTML}{ABB2BF}
+\else
+\definecolor{diagrambg}{HTML}{FFFFFF}
+\definecolor{diagramfg}{HTML}{000000}
+
+\definecolor{diagramshaded}{HTML}{CCFFCC}
+\definecolor{diagramshadedtext}{HTML}{000000}
+\fi
+
+\pagecolor{diagrambg}
+\color{diagramfg}
 
 \begin{document}
 \begin{page}

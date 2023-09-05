@@ -148,10 +148,10 @@ things that are equal to `id`.
 ```agda
 module _ (inv : p ∙ q ≡ refl) where abstract
   ∙-cancell : p ∙ (q ∙ r) ≡ r
-  ∙-cancell = ∙-pulll inv ∙ ∙-id-l _
+  ∙-cancell = ∙-pulll inv ∙ ∙-idl _
 
   ∙-cancelr : (r ∙ p) ∙ q ≡ r
-  ∙-cancelr = ∙-pullr inv ∙ ∙-id-r _
+  ∙-cancelr = ∙-pullr inv ∙ ∙-idr _
 
   ∙-insertl : r ≡ p ∙ (q ∙ r)
   ∙-insertl = sym ∙-cancell
