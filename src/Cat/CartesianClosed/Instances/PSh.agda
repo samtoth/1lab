@@ -173,6 +173,20 @@ module _ {o ℓ κ} {C : Precategory o ℓ} where
     coequ .has-is-coeq .unique {F = F} p = Nat-path λ i → funext $
       Coeq-elim-prop (λ _ → F .F₀ _ .is-tr _ _) λ x → p ηₚ i $ₚ x
 
+  PSh-initial : Initial (PSh κ C)
+  PSh-initial = record { bot = bot ; has⊥ = uniq } where
+    bot : Functor (C ^op) (Sets κ)
+    bot .F₀ _ = el! (Lift κ ⊥) 
+    bot .F₁ _ () 
+    bot .F-id _ ()
+    bot .F-∘ _ _ _ ()
+
+    uniq : is-initial (PSh κ C) bot
+    uniq x .centre .η  _ ()
+    uniq x .centre .is-natural _ _ _ _ ()
+    uniq x .paths _ = Nat-path (λ where _ _ ())
+
+
 module _ {κ} {C : Precategory κ κ} where
   private
     module C = Cat.Reasoning C
