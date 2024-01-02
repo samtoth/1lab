@@ -12,6 +12,8 @@ open import Cat.Instances.Functor
 open import Cat.Displayed.Fibre
 open import Cat.Displayed.Base
 open import Cat.Displayed.Path
+open import Cat.Functor.Equivalence
+open import Cat.Functor.Equivalence.Path
 open import Cat.Prelude
 
 import Cat.Displayed.Morphism
@@ -359,3 +361,141 @@ it survives automatically.
     hl x = is-hlevel≃ 1 (Iso→Equiv eqv) $
       ×-is-hlevel 1 (Π-is-hlevel 1 λ _ → is-hlevel-is-prop 2) hlevel!
 ```
+# Categories of discrete fibrations
+
+We can also consider morphisms between discrete fibrations. These are the 
+vertically-fibred functors, we will call this category DFibs and show that
+it is equivalent to the category of presheaves.
+
+<!--
+```agda
+  private unquoteDecl Vf-eqv = declare-record-iso Vf-eqv (quote Vertical-functor)
+
+  Vertical-functor-is-set : {C D : Displayed B o o} → Discrete-fibration D
+                → is-set (Vertical-functor C D)
+  Vertical-functor-is-set {C} {D} discrete =
+    Iso→is-hlevel 2 Vf-eqv (hlevel 2)
+    where
+      open Displayed.Displayed-HLevel-instance D
+      module D = Displayed D
+      open Discrete-fibration discrete
+      instance
+        Dob : ∀ {x} → H-Level (D.Ob[ x ]) 2
+        Dob = basic-instance 2 (fibre-set _)
+```   
+-->
+
+```agda
+  DFibs : Precategory (lsuc o ⊔ ℓ) (o ⊔ ℓ)
+  DFibs .Precategory.Ob = Σ (Displayed B o o) Discrete-fibration
+  DFibs .Precategory.Hom (F , _) (G , _) = Vertical-functor F G
+  DFibs .Precategory.id = IdV
+  DFibs .Precategory._∘_ = _V∘_
+  DFibs .Precategory.idr _ = Vertical-functor-path (λ _ → refl) λ _ → refl
+  DFibs .Precategory.idl _ = Vertical-functor-path (λ _ → refl) λ _ → refl
+  DFibs .Precategory.assoc f g h = Vertical-functor-path (λ _ → refl) (λ _ → refl)
+
+  DFibs .Precategory.Hom-set _ (_ , disc) = Vertical-functor-is-set disc
+```
+
+```agda
+  Vf→NatTrans : ∀ {C D : Displayed B o o} {c-disc : Discrete-fibration C} {d-disc : Discrete-fibration D}
+          → Vertical-functor C D → (discrete→presheaf C c-disc) => (discrete→presheaf D d-disc)
+  Vf→NatTrans {C = C} {D} {c-disc} {d-disc} α = NT (λ _ → F₀') λ _ _ f → funext (natural f) where
+    open Vertical-functor α
+    module C = Displayed C
+    module D = Displayed D
+    module C' = Discrete-fibration c-disc
+    module D' = Discrete-fibration d-disc
+      
+
+    natural : ∀ {x y} (f : B.Hom x y) y' → F₀' (C'.lifts f y' .centre .fst) ≡ D'.lifts f (F₀' y') .centre .fst
+    natural f y' = sym (ap fst (D'.lifts f (F₀' y') .paths (F₀' (C'.lifts f y' .centre .fst) , F₁' (C'.lifts f y' .centre .snd))))
+```
+
+```agda
+  NatTrans→Vf : ∀ {C D : Displayed B o o} {c-disc : Discrete-fibration C} {d-disc : Discrete-fibration D}
+       → (discrete→presheaf C c-disc) => (discrete→presheaf D d-disc) → Vertical-functor C D
+  NatTrans→Vf {C} {D} {c-disc} {d-disc} α = vf where
+    open _=>_ α
+    module C  = Displayed C
+    module C' = Discrete-fibration c-disc
+    module D  = Displayed D
+    module D' = Discrete-fibration d-disc
+    -- open Cartesian-fibration (discrete→cartesian D d-disc)
+
+    
+    liftx≡ηx' : ∀ {x y} {f} {x' : C.Ob[ x ]} {y' : C.Ob[ y ]} (f' : C.Hom[ f ] x' y')
+               → D'.lifts f (η y y') .centre .fst ≡ η x x'
+    liftx≡ηx' {f = f} {x'} {y'} f' = eq1 ∙ ap (η _) eq2 where
+      eq1 : D'.lifts f (η _ y') .centre .fst ≡ η _ (C'.lifts f y' .centre .fst)
+      eq1 = sym $ happly (is-natural _ _ f) y'
+
+      eq2 : C'.lifts f y' .centre .fst ≡ x'
+      eq2 = ap fst $ C'.lifts f y' .paths (x' , f')
+
+    vf : Vertical-functor C D
+    vf .Vertical-functor.F₀' = η _
+    vf .Vertical-functor.F₁' {x} {y} {f} {x'} {y'} f' 
+      = subst (λ p → D.Hom[ f ] p (η y y')) (liftx≡ηx' f') (D'.lifts f (η y y') .centre .snd)
+    vf .Vertical-functor.F-id' {x} {x'} = from-pathp eq2 where
+      eq1 : PathP (λ i → D.Hom[ B.id ] _ (η x x')) (D'.lifts _ (η x x') .centre .snd) D.id'
+      eq1 = ap snd (D'.lifts B.id _ .paths (_ , D.id'))
+
+      eq2 : PathP (λ i → D.Hom[ B.id ] (liftx≡ηx' C.id' i) (η x x')) (D'.lifts _ (η x x') .centre .snd) D.id'
+      eq2 = subst 
+          (λ e → PathP (λ i → D.Hom[ B.id ] (e i) (η x x')) (D'.lifts _ (η x x') .centre .snd) D.id')
+          (D'.fibre-set _ _ _ _ _) eq1
+    vf .Vertical-functor.F-∘' {f = f} {g} {c' = c'} {f' = f'} {g'}
+      = ap (λ e → subst (λ e → D.Hom[ f B.∘ g ] e (η _ c')) e
+            (D'.lifts _ _ .centre .snd)) (D'.fibre-set _ _ _ _ _)
+         ∙ from-pathp (ap snd (D'.lifts _ _ .paths _))
+          
+```
+
+```agda
+  Vf≃NatTrans : ∀ {C D : Displayed B o o} {c-disc : Discrete-fibration C} {d-disc : Discrete-fibration D}
+        → is-iso (Vf→NatTrans {C} {D} {c-disc} {d-disc})
+  Vf≃NatTrans .inv = NatTrans→Vf
+  Vf≃NatTrans .rinv α = Nat-path (λ _ → refl)
+  Vf≃NatTrans {C} {D} {c-disc} {d-disc} .linv α = Vertical-functor-path (λ _ → refl)
+     (λ {_} {_} {x'} f → eq {x' = x'} f) where
+    module C  = Displayed C
+    open Vertical-functor
+    module C' = Discrete-fibration c-disc
+    module D  = Displayed D
+    module D' = Discrete-fibration d-disc
+    module _ {x y} {x' x'' : C.Ob[ x ]}
+      {y' : C .Displayed.Ob[_] y} {f : B .Precategory.Hom x y}
+      (f' : C .Displayed.Hom[_] f x'' y')  where
+
+      eq1 : PathP (λ i → D.Hom[ f ] _ (α .F₀' y')) _ (α .F₁' f')
+      eq1 = ap snd (D'.lifts f (α .F₀' y') .paths (α .F₀' x'' , α .F₁' f')) 
+
+      eq : NatTrans→Vf {C} {D} {c-disc} {d-disc} (Vf→NatTrans α) .F₁' f' ≡ α .F₁' f'
+      eq  =  from-pathp $
+               subst (λ e → PathP (λ i → D.Hom[ f ] (e i) (α .F₀' y')) (D'.lifts _ _ .centre .snd)
+                 (α .F₁' f'))
+                 (D'.fibre-set _ _ _ _ _) eq1
+
+```
+
+```agda
+  DFibs→PSh : Functor DFibs (PSh o B)
+  DFibs→PSh .Functor.F₀ (D , disc) = discrete→presheaf D disc
+  DFibs→PSh .Functor.F₁ = Vf→NatTrans
+  DFibs→PSh .Functor.F-id = Nat-path (λ _ → refl)
+  DFibs→PSh .Functor.F-∘ f g = Nat-path (λ _ → refl)
+```
+
+```agda
+  DFibs≃PSh : is-precat-iso DFibs→PSh
+  DFibs≃PSh .is-precat-iso.has-is-ff = is-iso→is-equiv Vf≃NatTrans
+  DFibs≃PSh .is-precat-iso.has-is-iso = (Iso→Equiv (presheaf→discrete , presheaf≃discrete) e⁻¹) .snd
+```
+
+```agda
+  DFibs≡PSh : DFibs ≡ (PSh o B)
+  DFibs≡PSh = Precategory-path DFibs→PSh DFibs≃PSh
+```
+       
