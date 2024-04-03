@@ -3,6 +3,7 @@ open import Cat.Instances.Functor.Limits
 open import Cat.Instances.Sets.Complete
 open import Cat.Diagram.Exponential
 open import Cat.Diagram.Everything
+open import Cat.CartesianClosed.Locally
 open import Cat.Instances.Functor
 open import Cat.Functor.Adjoint
 open import Cat.Instances.Sets
@@ -228,3 +229,9 @@ module _ {κ} {C : Precategory κ κ} where
     cc : Cartesian-closed (PSh κ C) (PSh-products {C = C}) (PSh-terminal {C = C})
     cc = product-adjoint→cartesian-closed (PSh κ C)
       (PSh-products {C = C}) (PSh-terminal {C = C}) func adj
+
+
+module _ {κ} {C : Precategory κ κ} where
+  lcc : Locally-cartesian-closed (PSh κ C)
+  lcc .Locally-cartesian-closed.has-is-lex = with-pullbacks _ (PSh-terminal {C = C}) (PSh-pullbacks {C = C})
+  lcc .Locally-cartesian-closed.slices-cc A = {!   !}

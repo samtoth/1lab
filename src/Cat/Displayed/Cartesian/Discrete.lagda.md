@@ -217,6 +217,7 @@ a presheaf from a discrete fibration.
 module _ {o ℓ} (B : Precategory o ℓ)  where
   private
     module B = Precategory B
+    module Pc = Precategory
 ```
 -->
 
@@ -361,11 +362,11 @@ it survives automatically.
     hl x = is-hlevel≃ 1 (Iso→Equiv eqv) $
       ×-is-hlevel 1 (Π-is-hlevel 1 λ _ → is-hlevel-is-prop 2) hlevel!
 ```
-# Categories of discrete fibrations
+## Categories of discrete fibrations
 
-We can also consider morphisms between discrete fibrations. These are the 
-vertically-fibred functors, we will call this category DFibs and show that
-it is equivalent to the category of presheaves.
+Discrete fibrations also form the objects of a category where the
+morphisms are `vertical functors`{.agda ident=Vertical-functor}. We can
+now show that this category is equivalent to the category of presheaves.
 
 <!--
 ```agda
@@ -386,22 +387,37 @@ it is equivalent to the category of presheaves.
 -->
 
 ```agda
-  DFibs : Precategory (lsuc o ⊔ ℓ) (o ⊔ ℓ)
-  DFibs .Precategory.Ob = Σ (Displayed B o o) Discrete-fibration
-  DFibs .Precategory.Hom (F , _) (G , _) = Vertical-functor F G
-  DFibs .Precategory.id = IdV
-  DFibs .Precategory._∘_ = _V∘_
-  DFibs .Precategory.idr _ = Vertical-functor-path (λ _ → refl) λ _ → refl
-  DFibs .Precategory.idl _ = Vertical-functor-path (λ _ → refl) λ _ → refl
-  DFibs .Precategory.assoc f g h = Vertical-functor-path (λ _ → refl) (λ _ → refl)
-
-  DFibs .Precategory.Hom-set _ (_ , disc) = Vertical-functor-is-set disc
+  Discrete-fibrations : Precategory (lsuc o ⊔ ℓ) (o ⊔ ℓ)
+  Discrete-fibrations .Pc.Ob = Σ (Displayed B o o) Discrete-fibration
+  Discrete-fibrations .Pc.Hom (F , _) (G , _) = Vertical-functor F G
+  Discrete-fibrations .Pc.id = IdV
+  Discrete-fibrations .Pc._∘_ = _V∘_
+  Discrete-fibrations .Pc.idr _ = Vertical-functor-path (λ _ → refl) λ _ → refl
+  Discrete-fibrations .Pc.idl _ = Vertical-functor-path (λ _ → refl) λ _ → refl
+  Discrete-fibrations .Pc.assoc f g h = Vertical-functor-path (λ _ → refl) (λ _ → refl)
 ```
 
+Similarly to the Category of [[Strict Sets]], this assembles into a
+[[Precategory]] because `vertical functors`{.agda ident=Vertical-functor}
+are h-sets just when the displayed objects form a set.
+
 ```agda
-  Vf→NatTrans : ∀ {C D : Displayed B o o} {c-disc : Discrete-fibration C} {d-disc : Discrete-fibration D}
-          → Vertical-functor C D → (discrete→presheaf C c-disc) => (discrete→presheaf D d-disc)
-  Vf→NatTrans {C = C} {D} {c-disc} {d-disc} α = NT (λ _ → F₀') λ _ _ f → funext (natural f) where
+  Discrete-fibrations .Pc.Hom-set _ (_ , disc) = Vertical-functor-is-set disc
+```
+
+To get an equivalence between Precategories, we just need to give an
+equivalence of Objects, and an equivalence of Homs. The direction from
+vertical functors to natural transformations is simple. The object mapping
+of the Vertical functor is exactly what we need to define the mapping
+and it's naturality follows from the contractibilty of lifts in \cD.
+
+```agda
+  Vertical-functor→natural-trans : ∀ {C D : Displayed B o o}
+        → {c-disc : Discrete-fibration C} {d-disc : Discrete-fibration D}
+        → Vertical-functor C D
+        → (discrete→presheaf C c-disc) => (discrete→presheaf D d-disc)
+  Vertical-functor→natural-trans {C} {D} {c-disc} {d-disc} α 
+    = NT (λ _ → F₀') λ _ _ f → funext (natural f) where
     open Vertical-functor α
     module C = Displayed C
     module D = Displayed D
@@ -409,43 +425,56 @@ it is equivalent to the category of presheaves.
     module D' = Discrete-fibration d-disc
       
 
-    natural : ∀ {x y} (f : B.Hom x y) y' → F₀' (C'.lifts f y' .centre .fst) ≡ D'.lifts f (F₀' y') .centre .fst
-    natural f y' = sym (ap fst (D'.lifts f (F₀' y') .paths (F₀' (C'.lifts f y' .centre .fst) , F₁' (C'.lifts f y' .centre .snd))))
+    natural : ∀ {x y} (f : B.Hom x y) y'
+            → F₀' (C'.lifts f y' .centre .fst) ≡ D'.lifts f (F₀' y') .centre .fst
+    natural f y' = sym (ap fst (D'.lifts _ _ .paths (_ , F₁' (C'.lifts f y' .centre .snd))))
 ```
 
 ```agda
-  NatTrans→Vf : ∀ {C D : Displayed B o o} {c-disc : Discrete-fibration C} {d-disc : Discrete-fibration D}
-       → (discrete→presheaf C c-disc) => (discrete→presheaf D d-disc) → Vertical-functor C D
-  NatTrans→Vf {C} {D} {c-disc} {d-disc} α = vf where
+  Natural-trans→vertical-functor : ∀ {C D : Displayed B o o}
+        → {c-disc : Discrete-fibration C} {d-disc : Discrete-fibration D}
+        → (discrete→presheaf C c-disc) => (discrete→presheaf D d-disc)
+        → Vertical-functor C D
+  Natural-trans→vertical-functor {C} {D} {c-disc} {d-disc} α = vf where
     open _=>_ α
     module C  = Displayed C
     module C' = Discrete-fibration c-disc
     module D  = Displayed D
     module D' = Discrete-fibration d-disc
-    -- open Cartesian-fibration (discrete→cartesian D d-disc)
 
-    
-    liftx≡ηx' : ∀ {x y} {f} {x' : C.Ob[ x ]} {y' : C.Ob[ y ]} (f' : C.Hom[ f ] x' y')
-               → D'.lifts f (η y y') .centre .fst ≡ η x x'
-    liftx≡ηx' {f = f} {x'} {y'} f' = eq1 ∙ ap (η _) eq2 where
-      eq1 : D'.lifts f (η _ y') .centre .fst ≡ η _ (C'.lifts f y' .centre .fst)
-      eq1 = sym $ happly (is-natural _ _ f) y'
+```
 
-      eq2 : C'.lifts f y' .centre .fst ≡ x'
-      eq2 = ap fst $ C'.lifts f y' .paths (x' , f')
+To go in the other direction, we know that the object mapping is given from 
+the data of a natural transformation.
 
+```agda
     vf : Vertical-functor C D
     vf .Vertical-functor.F₀' = η _
+```
+The mapping of morphisms is slightly more complicated. We need a displayed hom
+$\eta x' \to \eta y'$ over f, but lifting gives us a morphism that doesn't agree
+on the object over x. Luckily we can show these objects are equal and transport
+over this equality.
+
+```agda
     vf .Vertical-functor.F₁' {x} {y} {f} {x'} {y'} f' 
       = subst (λ p → D.Hom[ f ] p (η y y')) (liftx≡ηx' f') (D'.lifts f (η y y') .centre .snd)
-    vf .Vertical-functor.F-id' {x} {x'} = from-pathp eq2 where
-      eq1 : PathP (λ i → D.Hom[ B.id ] _ (η x x')) (D'.lifts _ (η x x') .centre .snd) D.id'
-      eq1 = ap snd (D'.lifts B.id _ .paths (_ , D.id'))
+      where
+        liftx≡ηx' : ∀ {x y} {f} {x' : C.Ob[ x ]} {y' : C.Ob[ y ]} (f' : C.Hom[ f ] x' y')
+               → D'.lifts f (η y y') .centre .fst ≡ η x x'
+        liftx≡ηx' {f = f} {x'} {y'} f' = nat ∙ ap (η _) lift' where
+          nat : D'.lifts f (η _ y') .centre .fst ≡ η _ (C'.lifts f y' .centre .fst)
+          nat = sym $ happly (is-natural _ _ f) y'
 
-      eq2 : PathP (λ i → D.Hom[ B.id ] (liftx≡ηx' C.id' i) (η x x')) (D'.lifts _ (η x x') .centre .snd) D.id'
-      eq2 = subst 
-          (λ e → PathP (λ i → D.Hom[ B.id ] (e i) (η x x')) (D'.lifts _ (η x x') .centre .snd) D.id')
-          (D'.fibre-set _ _ _ _ _) eq1
+          lift' : C'.lifts f y' .centre .fst ≡ x'
+          lift' = ap fst $ C'.lifts f y' .paths (x' , f')
+```
+
+```agda
+    vf .Vertical-functor.F-id' {x} {x'} = from-pathp $
+      subst 
+      (λ e → PathP (λ i → D.Hom[ B.id ] (e i) (η x x')) (D'.lifts _ (η _ x') .centre .snd) D.id')
+      (D'.fibre-set _ _ _ _ _) (ap snd (D'.lifts B.id _ .paths (_ , D.id')))
     vf .Vertical-functor.F-∘' {f = f} {g} {c' = c'} {f' = f'} {g'}
       = ap (λ e → subst (λ e → D.Hom[ f B.∘ g ] e (η _ c')) e
             (D'.lifts _ _ .centre .snd)) (D'.fibre-set _ _ _ _ _)
@@ -454,11 +483,12 @@ it is equivalent to the category of presheaves.
 ```
 
 ```agda
-  Vf≃NatTrans : ∀ {C D : Displayed B o o} {c-disc : Discrete-fibration C} {d-disc : Discrete-fibration D}
-        → is-iso (Vf→NatTrans {C} {D} {c-disc} {d-disc})
-  Vf≃NatTrans .inv = NatTrans→Vf
-  Vf≃NatTrans .rinv α = Nat-path (λ _ → refl)
-  Vf≃NatTrans {C} {D} {c-disc} {d-disc} .linv α = Vertical-functor-path (λ _ → refl)
+  Vertical-functor≃natural-trans : ∀ {C D : Displayed B o o}
+      → {c-disc : Discrete-fibration C} {d-disc : Discrete-fibration D}
+      → is-iso (Vertical-functor→natural-trans {C} {D} {c-disc} {d-disc})
+  Vertical-functor≃natural-trans .inv = Natural-trans→vertical-functor
+  Vertical-functor≃natural-trans .rinv α = Nat-path (λ _ → refl)
+  Vertical-functor≃natural-trans {C} {D} {c-disc} {d-disc} .linv α = Vertical-functor-path (λ _ → refl)
      (λ {_} {_} {x'} f → eq {x' = x'} f) where
     module C  = Displayed C
     open Vertical-functor
@@ -472,7 +502,8 @@ it is equivalent to the category of presheaves.
       eq1 : PathP (λ i → D.Hom[ f ] _ (α .F₀' y')) _ (α .F₁' f')
       eq1 = ap snd (D'.lifts f (α .F₀' y') .paths (α .F₀' x'' , α .F₁' f')) 
 
-      eq : NatTrans→Vf {C} {D} {c-disc} {d-disc} (Vf→NatTrans α) .F₁' f' ≡ α .F₁' f'
+      eq : Natural-trans→vertical-functor {C} {D} {c-disc} {d-disc}
+           (Vertical-functor→natural-trans α) .F₁' f' ≡ α .F₁' f'
       eq  =  from-pathp $
                subst (λ e → PathP (λ i → D.Hom[ f ] (e i) (α .F₀' y')) (D'.lifts _ _ .centre .snd)
                  (α .F₁' f'))
@@ -481,21 +512,22 @@ it is equivalent to the category of presheaves.
 ```
 
 ```agda
-  DFibs→PSh : Functor DFibs (PSh o B)
+  DFibs→PSh : Functor Discrete-fibrations (PSh o B)
   DFibs→PSh .Functor.F₀ (D , disc) = discrete→presheaf D disc
-  DFibs→PSh .Functor.F₁ = Vf→NatTrans
+  DFibs→PSh .Functor.F₁ = Vertical-functor→natural-trans
   DFibs→PSh .Functor.F-id = Nat-path (λ _ → refl)
   DFibs→PSh .Functor.F-∘ f g = Nat-path (λ _ → refl)
 ```
 
 ```agda
   DFibs≃PSh : is-precat-iso DFibs→PSh
-  DFibs≃PSh .is-precat-iso.has-is-ff = is-iso→is-equiv Vf≃NatTrans
-  DFibs≃PSh .is-precat-iso.has-is-iso = (Iso→Equiv (presheaf→discrete , presheaf≃discrete) e⁻¹) .snd
+  DFibs≃PSh .is-precat-iso.has-is-ff = is-iso→is-equiv Vertical-functor≃natural-trans
+  DFibs≃PSh .is-precat-iso.has-is-iso 
+    = (Iso→Equiv (presheaf→discrete , presheaf≃discrete) e⁻¹) .snd
 ```
 
 ```agda
-  DFibs≡PSh : DFibs ≡ (PSh o B)
+  DFibs≡PSh : Discrete-fibrations ≡ (PSh o B)
   DFibs≡PSh = Precategory-path DFibs→PSh DFibs≃PSh
 ```
        

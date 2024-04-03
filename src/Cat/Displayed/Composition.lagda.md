@@ -1,6 +1,7 @@
 <!--
 ```agda
 open import Cat.Displayed.Cartesian
+open import Cat.Displayed.Cartesian.Discrete
 open import Cat.Displayed.Functor
 open import Cat.Displayed.Total
 open import Cat.Displayed.Base
@@ -139,4 +140,64 @@ universal.
           (total-hom-path ℰ refl (ℰ-lift .commutes _ _))
           (m' .snd)
           (ap snd p)
+```
+
+## Composition of discrete fibrations
+
+```agda
+
+  discrete∘ : Discrete-fibration ℰ → Discrete-fibration ℱ → Discrete-fibration (ℰ D∘ ℱ)
+  discrete∘ ed fd = ℰ∘ℱ-disc where
+    open Discrete-fibration
+
+    instance
+      e-set : ∀ {x} → H-Level ℰ.Ob[ x ] 2
+      e-set {x} = basic-instance 2 (ed .fibre-set x)
+
+      f-set : ∀ {x} → H-Level ℱ.Ob[ x ] 2
+      f-set {x} = basic-instance 2 (fd .fibre-set x)
+
+    ℰ∘ℱ-disc : Discrete-fibration (ℰ D∘ ℱ)
+    ℰ∘ℱ-disc .fibre-set x = hlevel 2
+    ℰ∘ℱ-disc .lifts {x} {y} f y'@(ey , efy) = contr lift-centre lift-contr where
+      e-lift : is-contr (Σ ℰ.Ob[ x ] (λ x' → ℰ.Hom[ f ] x' ey))
+      e-lift = ed .lifts f ey
+
+      f-lift : is-contr (Σ ℱ.Ob[ x , e-lift .centre .fst ] (λ x' → ℱ.Hom[ _ ] x' efy))
+      f-lift = fd .lifts (total-hom f (e-lift .centre .snd)) efy
+
+      lift-centre : Σ (Displayed.Ob[ ℰ D∘ ℱ ] x)
+        (λ x' → Displayed.Hom[ ℰ D∘ ℱ ] f x' y')
+      lift-centre = (e-lift .centre .fst , f-lift .centre .fst) , (e-lift .centre .snd , f-lift .centre .snd)
+
+
+      lift-contr : (other : Σ (Displayed.Ob[ ℰ D∘ ℱ ] x)  (λ x' → Displayed.Hom[ ℰ D∘ ℱ ] f x' (ey , efy)))
+                 → lift-centre ≡ other
+      lift-contr (e∘fx , e∘ff) = (ap fst e-liftpath ,ₚ lem) ,ₚ (ap snd e-liftpath ,ₚ lem3)
+        where abstract
+          e-liftpath : e-lift .centre ≡ (e∘fx .fst , e∘ff .fst)
+          e-liftpath = e-lift .paths (e∘fx .fst , e∘ff .fst)
+
+          lem2 : Path (ℱ.Ob[ x , e-lift .centre .fst ]) (f-lift .centre .fst) (coe1→0 (λ i → ℱ.Ob[ x , fst (e-liftpath i) ]) (e∘fx .snd))
+          lem2 = ap fst (f-lift .paths 
+                  ((coe1→0 (λ i → ℱ.Ob[ x , fst (e-liftpath i) ]) (e∘fx .snd)) ,
+                   coe1→0 (λ i → ℱ.Hom[ total-hom f (e-liftpath i .snd) ] (coe1→i (λ j → ℱ.Ob[ x , e-liftpath j .fst ]) i (e∘fx .snd)) efy) (e∘ff .snd)))
+
+          lem : PathP (λ i → ℱ.Ob[ x , fst (e-liftpath i) ])
+                (f-lift .centre .fst) (e∘fx .snd)
+          lem = to-pathp⁻ lem2
+
+          lem4 : PathP (λ i → ℱ.Hom[ total-hom f (e-lift .centre .snd) ] (lem2 i) efy) 
+                  (f-lift .centre .snd)
+                  (coe1→0 (λ i → ℱ.Hom[ total-hom f (e-liftpath i .snd) ] (coe1→i (λ j → ℱ.Ob[ x , e-liftpath j .fst ]) i (e∘fx .snd)) efy) (e∘ff .snd))
+          lem4 = ap snd (f-lift .paths 
+                  (((coe1→0 (λ i → ℱ.Ob[ x , fst (e-liftpath i) ]) (e∘fx .snd))) , 
+                  (coe1→0 (λ i → ℱ.Hom[ total-hom f (e-liftpath i .snd) ] (coe1→i (λ j → ℱ.Ob[ x , e-liftpath j .fst ]) i (e∘fx .snd)) efy) (e∘ff .snd))))
+
+
+          lem3 : PathP (λ i → ℱ.Hom[ total-hom f (e-liftpath i .snd) ] (lem i) efy) (f-lift .centre .snd) (e∘ff .snd)
+          lem3 = cheat {- λ i → hcomp (∂ i) λ where 
+            j (j = i0) → coe0→i (λ i → ℱ.Hom[ total-hom f (e-liftpath i .snd) ] (lem i) efy) i (f-lift .centre .snd)
+            j (i = i0) → f-lift .centre .snd
+            j (i = i1) → {!   !} -} where postulate cheat : ∀ {A} → A
 ```

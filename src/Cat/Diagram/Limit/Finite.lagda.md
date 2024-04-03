@@ -16,6 +16,8 @@ open import Cat.Diagram.Pullback
 open import Cat.Diagram.Terminal
 open import Cat.Diagram.Product
 open import Cat.Instances.Lift
+open import Cat.Functor.Base
+open import Cat.Functor.FullSubcategory
 open import Cat.Prelude
 open import Cat.Finite
 
@@ -539,3 +541,16 @@ module _ {o ℓ o' ℓ'} {C : Precategory o ℓ} {D : Precategory o' ℓ'} where
   F∘-is-lex f g .pres-pullback = f .pres-pullback ⊙ g .pres-pullback
 ```
 -->
+
+## Categories of lex functors
+
+The category $Lex[\cC , \cD]$ of lex functors is a full subcategory of
+$Cat[F,D]$ - the functor category. 
+
+
+```agda
+module _ {o ℓ o' ℓ'} (C : Precategory o ℓ) (D : Precategory o' ℓ') where 
+  Lex[_,_] : Precategory (o ⊔ ℓ ⊔ o' ⊔ ℓ') (o ⊔ ℓ ⊔ ℓ')
+  Lex[_,_] = Restrict {C = Cat[ C , D ]} is-lex
+
+```
