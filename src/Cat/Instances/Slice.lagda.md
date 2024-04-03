@@ -2,6 +2,9 @@
 ```agda
 open import Cat.Diagram.Limit.Finite
 open import Cat.Functor.Properties
+open import Cat.Functor.Adjoint
+open import Cat.Functor.Equivalence
+open import Cat.Functor.Equivalence.Path
 open import Cat.Instances.Discrete
 open import Cat.Diagram.Pullback
 open import Cat.Diagram.Terminal
@@ -708,3 +711,58 @@ the fibre over $h$ would correspondingly be isomorphic to $A \times \top
       (idr _))
     where open Pullback (pb (constant-family .F₀ A .map) h)
 ```
+
+## Forget slice
+```agda
+module _ {o ℓ} {C : Precategory o ℓ} where
+  open Cat.Reasoning C
+
+  ForgetSlice : ∀ {A} → Functor (Slice C A) C
+  ForgetSlice .F₀ = domain
+  ForgetSlice .F₁ = map
+  ForgetSlice .F-id = trivial!
+  ForgetSlice .F-∘ f g = trivial!
+
+```
+
+
+## Slicing terminal objects
+
+```agda
+module _ {o ℓ} {C : Precategory o ℓ} (terminal : Terminal C) where
+  open Cat.Reasoning C
+  open Terminal terminal
+  private module C/1 = Precategory (Slice C top)
+  open import Cat.Instances.Lift
+    
+  C→C/1 : Functor C (Slice C top)
+  C→C/1 .F₀ A = cut (! {A})
+  C→C/1 .F₁ f = record { map = f ; commutes = sym (!-unique _) }
+  C→C/1 .F-id = trivial!
+  C→C/1 .F-∘ f g = trivial!
+
+  C/1≈C : is-precat-iso (ForgetSlice {C = C} {A = top})
+  C/1≈C .is-precat-iso.has-is-ff .is-eqv f = contr ((record { map = f ; commutes = !-unique₂ _ _ }) , refl) λ where
+                                           (m , com) → (ext (sym com)) ,ₚ to-pathp (Hom-set _ _ _ _ _ _)
+  C/1≈C .is-precat-iso.has-is-iso = is-iso→is-equiv (iso (λ x → cut {domain = x} !) (λ _ → refl)
+                                            λ x → /-Obj-path refl (to-pathp (!-unique₂ _ _)))
+
+  C≃C/1 : is-precat-iso C→C/1
+  C≃C/1 .is-precat-iso.has-is-ff .is-eqv f = contr (f .map , trivial!) λ where 
+    ( g , p ) → ap₂ _,_ (sym (ap map p)) (to-pathp (C/1.Hom-set _ _ _ _ _ _))
+  C≃C/1 .is-precat-iso.has-is-iso = is-iso→is-equiv (iso 
+    domain
+    (λ x → /-Obj-path refl (to-pathp (!-unique₂ _ _)))
+    λ _ → refl)
+```
+
+```agda
+
+  Forget⊣C→C/1 : C→C/1 ⊣ ForgetSlice
+  Forget⊣C→C/1 ._⊣_.unit = NT (λ x → id) λ x y f → cat! C
+  Forget⊣C→C/1 ._⊣_.counit = NT (λ x → record { map = id ; commutes = sym (has⊤ (domain x) .paths _) })
+                               λ x y f → ext (idl _ ∙ sym (idr _))
+  Forget⊣C→C/1 ._⊣_.zig = ext (idl _)
+  Forget⊣C→C/1 ._⊣_.zag = ext (idl _)
+   
+``` 

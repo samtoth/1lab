@@ -1,7 +1,10 @@
 <!--
 ```agda
 open import Cat.Instances.Product
+open import Cat.Functor.Naturality
 open import Cat.Prelude
+
+import Cat.Morphism
 ```
 -->
 
@@ -291,6 +294,33 @@ We also define a handful of common morphisms.
     pushl (sym π₂∘⟨⟩) ∙ elimr (is-invertible.invl ⟨⟩-inv)
 ```
 -->
+
+## Unique $\x$ functor
+
+```agda
+module _ (prod1 prod2 : has-products) where
+  private
+    module P = Binary-products prod1
+    module P' = Binary-products prod2
+      
+
+  ×-functor-Unique : P.×-functor ≅ⁿ P'.×-functor
+  ×-functor-Unique = to-natural-iso the-iso where
+    open Cat.Morphism using (_≅_; Inverses)
+    open make-natural-iso
+
+    the-iso : make-natural-iso P.×-functor P'.×-functor
+    the-iso .eta _ = P'.⟨ P.π₁ , P.π₂ ⟩
+    the-iso .inv _ = P.⟨ P'.π₁ , P'.π₂ ⟩
+    the-iso .eta∘inv _ = P'.⟨⟩∘ _ ∙ ap₂ P'.⟨_,_⟩ P.π₁∘⟨⟩ P.π₂∘⟨⟩ ∙ P'.⟨⟩-η
+    the-iso .inv∘eta _ = P.⟨⟩∘ _ ∙ ap₂ P.⟨_,_⟩ P'.π₁∘⟨⟩ P'.π₂∘⟨⟩ ∙ P.⟨⟩-η
+    the-iso .natural x y (f , g) 
+      = P'.⟨ f ∘ P'.π₁ , g ∘ P'.π₂ ⟩ ∘ P'.⟨ P.π₁ , P.π₂ ⟩ ≡⟨ P'.⟨⟩∘ _ ⟩
+        P'.⟨ (f ∘ P'.π₁) ∘ _ , (g ∘ P'.π₂) ∘ _ ⟩          ≡⟨ ap₂ P'.⟨_,_⟩ (pullr P'.π₁∘⟨⟩) (pullr P'.π₂∘⟨⟩) ⟩
+        P'.⟨ f ∘ P.π₁ , g ∘ P.π₂ ⟩                        ≡⟨ ap₂ P'.⟨_,_⟩ (sym P.π₁∘⟨⟩) (sym P.π₂∘⟨⟩) ⟩
+        P'.⟨ P.π₁ ∘ _ , P.π₂ ∘ _ ⟩                        ≡⟨ sym (P'.⟨⟩∘ _) ⟩
+        P'.⟨ P.π₁ , P.π₂ ⟩ ∘ P.⟨ f ∘ P.π₁ , g ∘ P.π₂ ⟩    ∎
+```
 
 ## Representability of products
 
