@@ -1,9 +1,8 @@
 <!--
 ```agda
-{-# OPTIONS -vtc.def.fun:10 #-}
 open import Algebra.Group.Cat.Base
 open import Algebra.Semigroup
-open import Algebra.Group.Ab
+open import Algebra.Group.Ab hiding (ℤ)
 open import Algebra.Prelude
 open import Algebra.Monoid
 open import Algebra.Group
@@ -11,7 +10,8 @@ open import Algebra.Group
 open import Cat.Instances.Delooping
 open import Cat.Abelian.Base
 
-open import Data.Int
+open import Data.Int.Properties
+open import Data.Int.Base
 
 import Cat.Reasoning
 ```
@@ -104,7 +104,6 @@ record is-ring {ℓ} {R : Type ℓ} (1r : R) (_*_ _+_ : R → R → R) : Type �
     public
 
   module m = Cat.Reasoning (B record { _⋆_ = _*_ ; has-is-monoid = *-monoid })
-    hiding (module HLevel-instance)
   module a = Abelian-group-on record { has-is-ab = +-group }
 
 record Ring-on {ℓ} (R : Type ℓ) : Type ℓ where
@@ -330,16 +329,16 @@ homomorphism $h : 0 \to R$ unless $0 = h(0) = h(1) = 1$ in $R$.
   .make-ring.ring-is-set → hlevel 2
   .make-ring.0R → 0
   .make-ring._+_ → _+ℤ_
-  .make-ring.-_ → negate
-  .make-ring.+-idl → +ℤ-zerol _
-  .make-ring.+-invr {x} → +ℤ-inverser x
-  .make-ring.+-assoc {x} {y} {z} → +ℤ-associative x y z
+  .make-ring.-_ → negℤ
+  .make-ring.+-idl      → +ℤ-zerol _
+  .make-ring.+-invr {x} → +ℤ-invr x
+  .make-ring.+-assoc {x} {y} {z} → +ℤ-assoc x y z
   .make-ring.+-comm {x} {y} → +ℤ-commutative x y
-  .make-ring.1R → 1
+  .make-ring.1R    → 1
   .make-ring._*_   → _*ℤ_
-  .make-ring.*-idl → *ℤ-idl _
-  .make-ring.*-idr → *ℤ-idr _
-  .make-ring.*-assoc {x} {y} {z} → *ℤ-associative x y z
-  .make-ring.*-distribl {x} {y} {z} → *ℤ-distrib-+ℤ-l x y z
-  .make-ring.*-distribr {x} {y} {z} → *ℤ-distrib-+ℤ-r x y z
+  .make-ring.*-idl → *ℤ-onel _
+  .make-ring.*-idr → *ℤ-oner _
+  .make-ring.*-assoc    {x} {y} {z} → *ℤ-associative x y z
+  .make-ring.*-distribl {x} {y} {z} → *ℤ-distribl x y z
+  .make-ring.*-distribr {x} {y} {z} → *ℤ-distribr x y z
 ```

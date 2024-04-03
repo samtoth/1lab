@@ -119,7 +119,7 @@ diagrammatic argument: If we have product diagrams $A \ot P \to B$ and
 $A \ot P' \to B$, we can fit them into a "commutative diamond" like the
 one below:
 
-~~~{.quiver .tall-1}
+~~~{.quiver}
 \[\begin{tikzcd}
   & P \\
   A && B \\
@@ -135,7 +135,7 @@ Since both $P$ and $P'$ are products, we know that the dashed arrows in
 the diagram below exist, so the overall diagram commutes: hence we have
 an isomorphism $P \cong P'$.
 
-~~~{.quiver .tall-1}
+~~~{.quiver}
 \[\begin{tikzcd}
   & P \\
   A && B \\

@@ -105,7 +105,7 @@ products).
   Finitely-complete→is-finitely-complete cat Flim finite =
     limit-as-equaliser-of-product
       (Cartesian→finite-products (Flim .terminal) (Flim .products) cat (finite .has-finite-Ob))
-      (Cartesian→finite-products (Flim .terminal) (Flim .products) cat (finite .has-finite-Mor))
+      (Cartesian→finite-products (Flim .terminal) (Flim .products) cat (finite .has-finite-Arrows))
       (Flim .equalisers)
 
   is-finitely-complete→Finitely-complete
@@ -150,7 +150,7 @@ pullback $X \times_Z Y$ as the largest subobject of $X \times Y$ where
 $f, g$ agree. In particular, the pullback we want is the object $X
 \times_Z Y$ in the commutative diagram below.
 
-~~~{.quiver .short-15}
+~~~{.quiver}
 \[\begin{tikzcd}
   {X\times_ZY} & {X\times Y} & Z
   \arrow[from=1-1, to=1-2]
@@ -244,7 +244,7 @@ object $*$.
 
 <div class=mathpar>
 
-~~~{.quiver .tall-2}
+~~~{.quiver}
 \[\begin{tikzcd}
   {P'} \\
   & {A\times B} && B \\
@@ -258,7 +258,7 @@ object $*$.
 \end{tikzcd}\]
 ~~~
 
-~~~{.quiver .tall-2}
+~~~{.quiver}
 \[\begin{tikzcd}
   {P'} \\
   & {A\times B} && B \\
@@ -366,7 +366,7 @@ $g$, then it fits into a commutative diagram like the one below, so that
 we may conclude the dashed arrow $E' \to \rm{eq}(f,g)$ exists and is
 unique.
 
-~~~{.quiver .tall-2}
+~~~{.quiver}
 \[\begin{tikzcd}
   {E'} \\
   & {\rm{eq}(f,g)} && A \\

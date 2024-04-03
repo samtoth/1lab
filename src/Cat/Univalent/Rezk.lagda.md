@@ -1,6 +1,5 @@
 <!--
 ```agda
-{-# OPTIONS -vtc.def.fun:10 #-}
 open import Cat.Functor.FullSubcategory
 open import Cat.Functor.Properties
 open import Cat.Instances.Functor
@@ -156,6 +155,7 @@ functor is fully faithful, that's equivalent to what we want.
 
 ```agda
   private module Rezk↪PSh = Ffr Rezk↪PSh id-equiv
+
   abstract
     Rezk-completion-is-category : is-category Rezk-completion
     Rezk-completion-is-category =
@@ -164,7 +164,7 @@ functor is fully faithful, that's equivalent to what we want.
           (Functor-is-category Sets-is-category)
           (よim.embed , よim.embed-is-embedding))
         (λ x y → Rezk↪PSh.iso-equiv e⁻¹)
-        λ x → Cr.≅-pathp Rezk-completion refl refl refl
+        λ x → trivial!
 ```
 
 It remains to show that the functor $\cA \to \widehat{\cA}$ is a

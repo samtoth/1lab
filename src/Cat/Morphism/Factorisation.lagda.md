@@ -25,8 +25,8 @@ M)$-factorisation of a morphism $f : a \to b$.
 <!--
 ```agda
 module _ {o ℓ} (C : Precategory o ℓ)
-         (E : ∀ {a b} → Precategory.Hom C a b → Ω)
-         (M : ∀ {a b} → Precategory.Hom C a b → Ω) where
+         (E : ∀ {a b} → C .Precategory.Hom a b → Ω)
+         (M : ∀ {a b} → C .Precategory.Hom a b → Ω) where
   private module C = Cat.Reasoning C
 ```
 -->
@@ -216,7 +216,7 @@ orthogonal to itself, hence an isomorphism.
 
   in-intersection≃is-iso
     : ∀ {a b} (f : C.Hom a b) → C.is-invertible f ≃ ((f ∈ E) × (f ∈ M))
-  in-intersection≃is-iso f = prop-ext (hlevel 1) (×-is-hlevel 1 hlevel! hlevel!)
+  in-intersection≃is-iso f = prop-ext!
     (λ fi → is-iso→in-E f fi , is-iso→in-M f fi)
     λ { (a , b) → in-intersection→is-iso f a b }
 ```

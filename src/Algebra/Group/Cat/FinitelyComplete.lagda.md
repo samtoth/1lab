@@ -105,7 +105,7 @@ Direct-product (G , Gg) (H , Hg) = to-group G×Hg where
   module H = Group-on Hg
 
   G×Hg : make-group (∣ G ∣ × ∣ H ∣)
-  G×Hg .make-group.group-is-set = hlevel!
+  G×Hg .make-group.group-is-set = hlevel 2
   G×Hg .make-group.unit = G.unit , H.unit
   G×Hg .make-group.mul (a , x) (b , y) = a G.⋆ b , x H.⋆ y
   G×Hg .make-group.inv (a , x) = a G.⁻¹ , x H.⁻¹
@@ -218,9 +218,9 @@ Similar yoga must be done for the inverse maps and the group unit.
     equ-group .make-group.unit = G.unit , invs
     equ-group .make-group.mul = equ-⋆
     equ-group .make-group.inv = equ-inv
-    equ-group .make-group.assoc x y z = Σ-prop-path (λ _ → H.has-is-set _ _) G.associative
-    equ-group .make-group.invl x = Σ-prop-path (λ _ → H.has-is-set _ _) G.inversel
-    equ-group .make-group.idl x = Σ-prop-path (λ _ → H.has-is-set _ _) G.idl
+    equ-group .make-group.assoc x y z = Σ-prop-path! G.associative
+    equ-group .make-group.invl x = Σ-prop-path! G.inversel
+    equ-group .make-group.idl x = Σ-prop-path! G.idl
 
   open is-equaliser
   open Equaliser
@@ -240,7 +240,7 @@ $g$.
     go = seq.universal {F = underlying-set (F .snd)} (ap hom p)
 
     lim-gh : is-group-hom _ _ go
-    lim-gh .pres-⋆ x y = Σ-prop-path (λ _ → H.has-is-set _ _) (e' .preserves .pres-⋆ _ _)
+    lim-gh .pres-⋆ x y = Σ-prop-path! (e' .preserves .pres-⋆ _ _)
 
   Groups-equalisers .has-is-eq .factors {F = F} {p = p} = Forget-is-faithful
     (seq.factors {F = underlying-set (F .snd)} {p = ap hom p})

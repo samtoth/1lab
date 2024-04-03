@@ -338,7 +338,7 @@ inc-is-surjective (squash x y p q i j) = is-prop→squarep
 ```
 -->
 
-## Effectivity {defines="congruence quotients-are-effective"}
+## Effectivity {defines="congruence effectivity quotients-are-effective"}
 
 The most well-behaved case of quotients is when $R : A \to A \to \ty$
 takes values in propositions, is reflexive, transitive and symmetric (an
@@ -495,8 +495,8 @@ defines an element $[a] : A/\ker f$; If we have another fibre $(b, q)$,
 then $[a] = [b]$ because
 
 $$
-f(a) \overset{p}{\equiv} x \overset{q}{\equiv} f(b) \text{,}
-$$
+f(a) \overset{p}{\equiv} x \overset{q}{\equiv} f(b)
+$$,
 
 so the function $f^*x \to A/\ker f$ is constant, and factors through the
 [[propositional truncation]] $\| f^*x \|$.
@@ -510,7 +510,7 @@ so the function $f^*x \to A/\ker f$ is constant, and factors through the
     g₀-const (_ , p) (_ , q) = quot (p ∙ sym q)
 
   g₁ : ∀ {x} → ∥ fibre f x ∥ → c.quotient
-  g₁ f = ∥-∥-rec-set hlevel! g₀ g₀-const f
+  g₁ f = ∥-∥-rec-set (hlevel 2) g₀ g₀-const f
 ```
 
 Since each $\| f^*x \|$ is inhabited, all of these functions glue
@@ -533,3 +533,31 @@ is a set, that means it's an equivalence.
     (y , p) ← inc-is-surjective x
     pure (f y , ap g₁ (squash (surj (f y)) (inc (y , refl))) ∙ p)
 ```
+
+<!--
+```agda
+instance
+  Extensional-coeq-map
+    : ∀ {ℓ ℓ' ℓ'' ℓr} {A : Type ℓ} {B : Type ℓ'} {C : Type ℓ''} {f g : A → B}
+    → ⦃ sf : Extensional (B → C) ℓr ⦄ ⦃ _ : H-Level C 2 ⦄
+    → Extensional (Coeq f g → C) ℓr
+  Extensional-coeq-map ⦃ sf ⦄ .Pathᵉ f g = sf .Pathᵉ (f ∘ inc) (g ∘ inc)
+  Extensional-coeq-map ⦃ sf ⦄ .reflᵉ f = sf .reflᵉ (f ∘ inc)
+  Extensional-coeq-map ⦃ sf ⦄ .idsᵉ .to-path h = funext $
+    Coeq-elim-prop (λ x → hlevel 1) (happly (sf .idsᵉ .to-path h))
+  Extensional-coeq-map ⦃ sf ⦄ .idsᵉ .to-path-over p =
+    is-prop→pathp (λ i → Pathᵉ-is-hlevel 1 sf (hlevel 2)) _ _
+
+private module test where
+  variable C : Type ℓ
+
+  _ : {f g : A / R → B} ⦃ _ : H-Level B 2 ⦄
+    → ((x : A) → f (inc x) ≡ g (inc x)) → f ≡ g
+  _ = ext
+
+  _ : {f g : (A × B) / R → C} ⦃ _ : H-Level C 2 ⦄
+    → ((x : A) (y : B) → f (inc (x , y)) ≡ g (inc (x , y)))
+    → f ≡ g
+  _ = ext
+```
+-->

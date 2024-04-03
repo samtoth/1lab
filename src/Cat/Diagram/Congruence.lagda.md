@@ -320,7 +320,7 @@ We build the congruence in parts.
 
 For the reflexivity map, we take the unique map $f : A \to A \times_B A$
 which is characterised by $p_1 f = p_2 f = \mathrm{id}$; This expresses,
-diagramatically, that $f(x) = f(x)$.
+diagrammatically, that $f(x) = f(x)$.
 
 ```agda
     cg .has-refl = Kp.universal {p₁' = id} {p₂' = id} refl
@@ -380,7 +380,7 @@ coequaliser $q : A \epi A/R$ for the composites $R \mono A \times A \to
 A$, then we call $q$ the **quotient map**, and we call $A/R$ the
 **quotient** of $R$.
 
-~~~{.quiver .short-2}
+~~~{.quiver}
 \[\begin{tikzcd}
   R & {A \times A} & A & {A/R}
   \arrow["m", hook, from=1-1, to=1-2]

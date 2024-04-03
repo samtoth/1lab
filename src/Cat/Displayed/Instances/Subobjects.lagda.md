@@ -1,6 +1,5 @@
 <!--
 ```agda
-{-# OPTIONS -vtc.def:20 #-}
 open import Cat.Diagram.Pullback.Properties
 open import Cat.Displayed.Cocartesian.Weak
 open import Cat.Displayed.Cocartesian
@@ -101,7 +100,7 @@ commutative squares can be pasted together.
 Subobjects : Displayed B (o ⊔ ℓ) ℓ
 Subobjects .Ob[_] y = Subobject y
 Subobjects .Hom[_]  = ≤-over
-Subobjects .Hom[_]-set f a b = is-prop→is-set ≤-over-is-prop
+Subobjects .Hom[_]-set f a b = hlevel 2
 
 Subobjects .id' .map = id
 Subobjects .id' .sq  = id-comm-sym
@@ -112,9 +111,9 @@ Subobjects ._∘'_ α β .sq  = pullr (β .sq) ∙ extendl (α .sq)
 
 <!--
 ```agda
-Subobjects .idr' _       = is-prop→pathp (λ i → hlevel 1) _ _
-Subobjects .idl' _       = is-prop→pathp (λ i → hlevel 1) _ _
-Subobjects .assoc' _ _ _ = is-prop→pathp (λ i → hlevel 1) _ _
+Subobjects .idr' _       = prop!
+Subobjects .idl' _       = prop!
+Subobjects .assoc' _ _ _ = prop!
 
 open is-weak-cocartesian-fibration
 open Weak-cocartesian-lift
@@ -136,7 +135,7 @@ remind ourselves of the universal property:
 
 [codomain]: Cat.Displayed.Instances.Slice.html#as-a-fibration
 
-~~~{.quiver .tall-15}
+~~~{.quiver}
 \[\begin{tikzcd}
   \textcolor{rgb,255:red,214;green,92;blue,92}{u'} \\
   & \textcolor{rgb,255:red,92;green,92;blue,214}{x \times_y y'} && {y'} \\
@@ -191,8 +190,8 @@ Subobject-fibration pb .has-lift f y' = l where
   l .cartesian .universal {u' = u'} m h' = λ where
     .map → it .Pullback.universal (sym (h' .sq) ∙ sym (assoc f m (u' .map)))
     .sq  → sym (it .p₂∘universal)
-  l .cartesian .commutes _ _ = ≤-over-is-prop _ _
-  l .cartesian .unique _ _   = ≤-over-is-prop _ _
+  l .cartesian .commutes _ _ = prop!
+  l .cartesian .unique _ _   = prop!
 ```
 
 ## As a (weak) cocartesian fibration
@@ -214,7 +213,7 @@ To understand this result, we remind ourselves of the universal property
 of an image factorisation for $f : a \to b$: It is the initial subobject
 through with $f$ factors. That is to say, if $m : \Sub(b)$ is another
 subobject, and $f = me$ for some map $e : a \to m$, then $m \le \im f$.
-Summarised diagramatically, the universal property of an image
+Summarised diagrammatically, the universal property of an image
 factorisation looks like a kite:
 
 ~~~{.quiver}
@@ -234,7 +233,7 @@ factorisation looks like a kite:
 Now compare this with the universal property required of a weak
 co-cartesian lift:
 
-~~~{.quiver .tall-15}
+~~~{.quiver}
 \[\begin{tikzcd}
   {x'} && {f_!x'} && {u'} \\
   \\
@@ -264,8 +263,8 @@ property of $\im fx'$.
   l .weak-cocartesian .universal {x' = y'} h .map = im.universal _ (y' .monic) (h .map) (sym (h .sq))
   l .weak-cocartesian .universal h .sq = idl _ ∙ sym im.universal-factors
 
-  l .weak-cocartesian .commutes g' = is-prop→pathp (λ _ → hlevel 1) _ _
-  l .weak-cocartesian .unique _ _  = hlevel 1 _ _
+  l .weak-cocartesian .commutes g' = prop!
+  l .weak-cocartesian .unique _ _  = prop!
 ```
 
 The aforementioned general fact says that any cartesian and weak
@@ -297,7 +296,7 @@ Sub y = Fibre' Subobjects y re coh where
 
   abstract
     coh : ∀ {a b} (f : ≤-over (id ∘ id) a b) → re f ≡ transport (λ i → ≤-over (idl id i) a b) f
-    coh f = hlevel 1 _ _
+    coh f = prop!
 
 module Sub {y} = Cr (Sub y)
 ```
@@ -325,7 +324,7 @@ Sub-antisym
   → a ≤ₘ b
   → b ≤ₘ a
   → a Sub.≅ b
-Sub-antisym f g = Sub.make-iso f g (hlevel 1 _ _) (hlevel 1 _ _)
+Sub-antisym f g = Sub.make-iso f g prop! prop!
 
 Sub-path
   : ∀ {y} {a b : Subobject y}
@@ -371,9 +370,9 @@ Sub-products {y} pb a b = prod where
     it .Pullback.universal {p₁' = q≤a .map} {p₂' = q≤b .map} (sym (q≤a .sq) ∙ q≤b .sq)
   prod .Product.has-is-product .is-product.⟨_,_⟩ q≤a q≤b .sq =
     idl _ ∙ sym (pullr (it .p₁∘universal) ∙ sym (q≤a .sq) ∙ idl _)
-  prod .Product.has-is-product .is-product.π₁∘factor = hlevel 1 _ _
-  prod .Product.has-is-product .is-product.π₂∘factor = hlevel 1 _ _
-  prod .Product.has-is-product .is-product.unique _ _ _ = hlevel 1 _ _
+  prod .Product.has-is-product .is-product.π₁∘factor = prop!
+  prod .Product.has-is-product .is-product.π₂∘factor = prop!
+  prod .Product.has-is-product .is-product.unique _ _ _ = prop!
 ```
 
 ## Univalence
@@ -394,5 +393,5 @@ Sub-is-category b-cat .to-path {a} {b} x =
     i : a .domain ≅ b .domain
     i = make-iso (x .Sub.to .map) (x .Sub.from .map) (ap map (Sub.invl x)) (ap map (Sub.invr x))
 Sub-is-category b-cat .to-path-over p =
-  Sub.≅-pathp refl _ $ is-prop→pathp (λ _ → hlevel 1) _ _
+  Sub.≅-pathp refl _ prop!
 ```
