@@ -2,12 +2,15 @@
 ```agda
 open import Cat.Functor.Adjoint.Compose
 open import Cat.Instances.Slice.Twice
+open import Cat.CartesianClosed.Instances.Iso
 open import Cat.Diagram.Limit.Finite
 open import Cat.Diagram.Exponential
 open import Cat.Instances.Functor
+open import Cat.Instances.Product
 open import Cat.Diagram.Pullback
 open import Cat.Functor.Pullback
 open import Cat.Diagram.Product
+open import Cat.Diagram.Terminal
 open import Cat.Functor.Adjoint
 open import Cat.Instances.Slice
 open import Cat.Prelude
@@ -285,3 +288,16 @@ equivalence $(\cC/B)/f \cong \cC/A$.
       ·· ap (pullbacks _ _ .universal) prop!
       ·· sym (idl _)
 ```
+
+
+## Cartesian closure
+
+```agda
+  lcc→cc : Cartesian-closed C products terminal
+  lcc→cc = R-cartesian-closed' SliceLex ForgetSlice (C/1≈C terminal) (slices-cc top) has-is-lex where
+    open Terminal terminal
+
+    SliceLex : Finitely-complete (Slice C top)
+    SliceLex = record { terminal = Slice-terminal-object ; products =  prod/; equalisers = Slice-lex {_} {_} pullbacks .Finitely-complete.equalisers ; pullbacks = pullback/ }
+
+```  

@@ -1,6 +1,7 @@
 <!--
 ```agda
 open import Cat.Prelude
+open import Cat.Functor.Equivalence
 ```
 -->
 
@@ -53,4 +54,23 @@ Lift-functor-r bo bℓ G = F where
   F .F₁ f = lift $ F₁ G f
   F .F-id = ap lift $ F-id G
   F .F-∘ f g = ap lift $ F-∘ G f g
+```
+
+```agda
+is-iso→Lift-functor-l-is-iso : ∀ {so sℓ} bo bℓ {o ℓ} {C : Precategory so sℓ} {D : Precategory o ℓ}
+  → (F : Functor C D) → is-precat-iso F
+  → is-precat-iso (Lift-functor-l bo bℓ F)
+is-iso→Lift-functor-l-is-iso bo bℓ F i = eqv where
+  -- open Functor F
+  open is-precat-iso i
+  
+  eqv : is-precat-iso _
+  eqv .is-precat-iso.has-is-ff .is-eqv f =
+    contr (lift (has-is-ff .is-eqv f .centre .fst) , has-is-ff .is-eqv f .centre .snd)
+       λ where (lift g , p) → ap₂ _,_ (ap lift (ap fst $ has-is-ff .is-eqv f .paths (g , p)))
+                               (ap snd $ has-is-ff .is-eqv f .paths (g , p))
+  eqv .is-precat-iso.has-is-iso .is-eqv y = contr 
+    ((lift $ has-is-iso .is-eqv y .centre .fst) , has-is-iso .is-eqv y .centre .snd)
+     λ where (lift x , p) → ap (λ where (x , y) → (lift x , y)) $ has-is-iso .is-eqv y .paths (x , p)
+ 
 ```
