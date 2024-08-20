@@ -9,6 +9,7 @@ open import Cat.Displayed.Total
 open import Cat.Displayed.Base
 open import Cat.Instances.Sets
 open import Cat.Prelude
+open import Order.Base
 
 import Cat.Displayed.Morphism
 import Cat.Morphism
@@ -92,6 +93,14 @@ laws are trivial since $H$ is valued in propositions.
 
   Structured-objects : Precategory _ _
   Structured-objects = ∫ Thin-structure-over
+
+  Structured-fibre : ∀ X → Poset o' ℓ'
+  Structured-fibre X .Poset.Ob = S X
+  Structured-fibre X .Poset._≤_ x y = ∣ spec .is-hom (λ x → x) x y ∣
+  Structured-fibre X .Poset.≤-thin = spec .is-hom (λ x → x) _ _ .is-tr
+  Structured-fibre X .Poset.≤-refl = spec .id-is-hom
+  Structured-fibre X .Poset.≤-trans f g = spec .∘-is-hom (λ z₁ → z₁) (λ z₁ → z₁) g f
+  Structured-fibre X .Poset.≤-antisym = spec .id-hom-unique
 ```
 
 We recall that the $S$-structures can be made into a preorder by setting

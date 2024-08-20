@@ -1,6 +1,7 @@
 <!--
 ```agda
 {-# OPTIONS --lossy-unification #-}
+open import Cat.Functor.Adjoint.Compose
 open import Cat.Functor.Subcategory
 open import Cat.Functor.Adjoint
 open import Cat.Prelude
@@ -10,6 +11,7 @@ open import Data.Bool
 open import Order.Instances.Lower.Cocompletion
 open import Order.Instances.Pointwise
 open import Order.Semilattice.Meet
+open import Order.Semilattice.Free
 open import Order.Instances.Lower
 open import Order.Diagram.Meet
 open import Order.Diagram.Glb
@@ -222,4 +224,22 @@ cocontinuous extensions to tie everything up:
     p = Lan↓-unique B.⋃-lubs (f .hom) gᵐ
       (is-frame-hom.pres-⋃ (g .witness))
       (wit #ₚ_)
+```
+
+
+
+```agda
+--  Frame↪SLat : ∀ {o ℓ} → Functor (Frames o ℓ) (Meet-slats o ℓ)
+free-frame : ∀ {ℓ} → Functor (Meet-slats ℓ ℓ) (Frames ℓ ℓ)
+free-frame = free-objects→functor make-free-cocompletion
+
+free-frame-adjoint : ∀ {ℓ} → free-frame {ℓ} ⊣ Frame↪SLat
+free-frame-adjoint = free-objects→left-adjoint make-free-cocompletion
+```
+
+We can extend this to an adjunction between frames and Sets
+
+```
+Frame→Set-adjoint : {!   !} ⊣ {! Join-slats↪Sets  !} F∘ Frame↪SLat
+Frame→Set-adjoint = LF⊣GR {!   !} {!   !} -- (free-objects→left-adjoint make-free-join-slat) {! free-frame-adjoint  !}
 ```

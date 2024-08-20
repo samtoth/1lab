@@ -2,6 +2,7 @@
 ```agda
 open import Cat.Displayed.Cartesian
 open import Cat.Displayed.Base
+open import Cat.Functor.Base
 open import Cat.Prelude
 
 import Cat.Displayed.Reasoning as DR
@@ -590,6 +591,36 @@ module
       is-natural'
         : ∀ {x y f} (x' : ℰ.Ob[ x ]) (y' : ℰ.Ob[ y ]) (f' : ℰ.Hom[ f ] x' y')
         → η' y' ℱ.∘' F' .F₁' f' ℱ.≡[ α .is-natural x y f ] G' .F₁' f' ℱ.∘' η' x'
+
+  _∘nt'_ : {F : Functor A B} {G : Functor A B} {H : Functor A B} {F' : Displayed-functor ℰ ℱ F}
+                            {G' : Displayed-functor ℰ ℱ G} {H' : Displayed-functor ℰ ℱ H}
+                            {α : G => H} (α' : G' =[ α ]=> H')
+                            {β : F => G} (β' : F' =[ β ]=> G') 
+                            → F' =[ α ∘nt β ]=> H'
+  (α' ∘nt' β') ._=[_]=>_.η' x = α' .η' x ℱ.∘' β' .η' x where open _=[_]=>_
+  _∘nt'_ {F' = F'} {G'} {H'} {α = α} α' {β} β' ._=[_]=>_.is-natural' x' y' f' = to-pathp (
+    hom[ (α ∘nt β) .is-natural _ _ _ ] ((α' .η' y' ℱ.∘' β' .η' y') ℱ.∘' F.F₁' f')
+      ≡˘⟨ assoc[] ⟩
+    hom[ B.assoc _ _ _ ∙ ((α ∘nt β) .is-natural _ _ _) ]
+              (α' .η' y' ℱ.∘' (β' .η' y' ℱ.∘' F.F₁' f')) 
+      ≡⟨ apr' (β' .is-natural' x' y' f') ⟩
+    hom[ ap (B._∘_ _) (sym (β .is-natural _ _ _)) ·· B.assoc _ _ _ ·· ((α ∘nt β) .is-natural _ _ _) ]
+              (α' .η' y' ℱ.∘' (G.F₁' f' ℱ.∘' β' .η' x'))                                      
+      ≡⟨ assoc[] ⟩
+    hom[ (α .is-natural _ _ _ B.⟩∘⟨ refl) ∙ sym (B.assoc _ _ _) ]
+              ((α' .η' y' ℱ.∘' G.F₁' f') ℱ.∘' β' .η' x')                              
+      ≡⟨ apl' (α' .is-natural' x' y' f') ⟩
+    hom[ sym (B.assoc _ _ _) ] ((H.F₁' f' ℱ.∘' α' .η' x') ℱ.∘' β' .η' x')                            
+      ≡˘⟨ assoc[] ⟩
+    hom[ refl ] (H.F₁' f' ℱ.∘' (α' .η' x' ℱ.∘' β' .η' x'))                            
+      ≡⟨ liberate _ ⟩
+    (H.F₁' f' ℱ.∘' (α' .η' x' ℱ.∘' β' .η' x')) ∎) where 
+      open DR ℱ
+      open _=[_]=>_
+      module B = CR B
+      module F = Displayed-functor F'
+      module G = Displayed-functor G'
+      module H = Displayed-functor H'
 ```
 
 Let $F, G : \cE \to \cF$ be two vertical functors. A displayed natural transformation
@@ -637,3 +668,4 @@ to be preserved.
   F' =>f↓ G' = F' .vert =>↓ G' .vert
     where open Vertical-fibred-functor
 ```
+  

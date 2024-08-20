@@ -84,12 +84,10 @@ module _
           → (R' .F₁' (counit'.ε' x') ℰ.∘' unit'.η' (R' .F₀' x')) ℰ.≡[ zag ] ℰ.id'
 ```
 
-## Fibred adjunctions {defines="fibred-adjunction fibred-left-adjoint fibred-right-adjoint"}
+## Vertical adjunctions
 
-Let $\cE$ and $\cF$ be categories displayed over some $\cB$.  We say
-that a pair of vertical [[fibred functors]] $L : \cE \to \cF$, $R : \cF
-\to cF$ are **fibred adjoint functors** if they are displayed adjoint
-functors, and the unit and counit are vertical natural transformations.
+A pair of vertical functors are displyed adjoint functors over the 
+$Id \dashv Id$ - identity adjunction. 
 
 <!--
 ```agda
@@ -103,21 +101,56 @@ module _
     open Precategory B
     module ℰ = Displayed ℰ
     module ℱ = Displayed ℱ
-    open Vertical-fibred-functor
 
     lvl : Level
     lvl = ob ⊔ ℓb ⊔ oe ⊔ ℓe ⊔ of ⊔ ℓf
 
+  infix 15 _⊣f↓_
   infix 15 _⊣↓_
 ```
 -->
 
 ```agda
   record _⊣↓_
+      (L : Vertical-functor ℰ ℱ)
+      (R : Vertical-functor ℱ ℰ)
+      : Type lvl where
+      no-eta-equality
+
+      open Vertical-functor
+
+      field
+        unit' : IdV =>↓ R V∘ L
+        counit' : L V∘ R =>↓ IdV
+
+      module unit' = _=>↓_ unit'
+      module counit' = _=>↓_ counit' renaming (η' to ε')
+
+      field
+        zig' : ∀ {x} {x' : ℰ.Ob[ x ]}
+            → counit'.ε' (L .F₀' x') ℱ.∘' L .F₁' (unit'.η' x') ℱ.≡[ idl id ] ℱ.id'
+        zag' : ∀ {x} {x' : ℱ.Ob[ x ]}
+             → R .F₁' (counit'.ε' x') ℰ.∘' unit'.η' (R .F₀' x') ℰ.≡[ idl id ] ℰ.id'
+```
+
+## Fibred adjunctions {defines="fibred-adjunction fibred-left-adjoint fibred-right-adjoint"}
+
+Let $\cE$ and $\cF$ be categories displayed over some $\cB$.  We say
+that a pair of vertical [[fibred functors]] $L : \cE \to \cF$, $R : \cF
+\to cF$ are **fibred adjoint functors** if they are displayed adjoint
+functors, and the unit and counit are vertical natural transformations.
+
+
+
+```agda
+  record _⊣f↓_
     (L : Vertical-fibred-functor ℰ ℱ)
     (R : Vertical-fibred-functor ℱ ℰ)
     : Type lvl where
     no-eta-equality
+    
+    open Vertical-fibred-functor
+    
     field
       unit' : IdVf =>f↓ R Vf∘ L
       counit' : L Vf∘ R =>f↓ IdVf

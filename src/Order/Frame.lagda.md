@@ -307,3 +307,4 @@ Power-frame A .snd .⋃-distribl x f = funext λ i → Ω-ua
   (rec! λ xi j j~i → inc (j , xi , j~i))
   (rec! λ j xi j~i → xi , inc (j , j~i))
 ```
+  

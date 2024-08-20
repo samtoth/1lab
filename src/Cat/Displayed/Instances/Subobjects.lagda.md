@@ -48,6 +48,14 @@ record Subobject (y : Ob) : Type (o ⊔ ℓ) where
 open Subobject public
 ```
 
+<!--
+```agda
+-- instance
+--   Subobject-membership : ∀ {x} → Membership Ob (Subobject x) ℓ
+--   Subobject-membership .Membership._∈_ = {!   !}
+```
+-->
+
 To make formalisation smoother, we define our own version of displayed
 morphisms in the subobject fibration, rather than reusing those of the
 fundamental self-indexing. The reason for this is quite technical: the
