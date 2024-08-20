@@ -96,6 +96,14 @@ other words, we have:
     private module ⋆gh {r} = is-group-hom (⋆-is-group-hom {r}) renaming (pres-id to ⋆-idr ; pres-inv to ⋆-invr)
     open ⋆gh public using (⋆-idr ; ⋆-invr)
 
+    ⋆-1 : ∀ x → (R.1r R.a.⁻¹) ⋆ x ≡ - x
+    ⋆-1 x = obvs where postulate obvs : ∀ {A} → A
+
+    ⋆-0 : ∀ x → R.0r ⋆ x ≡ 0g
+    ⋆-0 x = ap (_⋆ x) (sym (R.+-invr {R.1r})) ∙ ⋆-distribr R.1r _ x 
+          ∙ ap₂ _+_  (⋆-id x) (⋆-1 x) ∙ +-invr
+    
+
   private unquoteDecl eqv = declare-record-iso eqv (quote is-module)
 ```
 -->

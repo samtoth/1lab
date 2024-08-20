@@ -142,6 +142,18 @@ direction, namely, that every unital semigroup is a monoid.
 ```
 
 # Inverses
+```agda
+record has-monoid-inverse {1M : A} {_⋆_ : A → A → A}
+          (m : is-monoid 1M _⋆_) (x : A) : Type (level-of A) where
+  constructor mInv
+  field x⁻¹  : A
+        invr : x ⋆ x⁻¹ ≡ 1M
+        invl : x⁻¹ ⋆ x ≡ 1M
+
+  
+module _ {1M : A} {_⋆_ : A → A → A}
+          (m : is-monoid 1M _⋆_)  where
+```
 
 A useful application of the monoid laws is in showing that _having an
 **inverse**_ is a _property_ of a specific element, not structure on
@@ -150,12 +162,13 @@ say $(M, 1, \star)$; If there are $x$ and $y$ such that $x \star e = 1$
 and $e \star y = 1$, then $x = y$.
 
 ```agda
-monoid-inverse-unique
-  : ∀ {1M : A} {_⋆_ : A → A → A}
-  → (m : is-monoid 1M _⋆_)
-  → (e x y : A)
-  → (x ⋆ e ≡ 1M) → (e ⋆ y ≡ 1M)
-  → x ≡ y
+```
+
+```agda
+  monoid-inverse-unique
+    : (e x y : A)
+    → (x ⋆ e ≡ 1M) → (e ⋆ y ≡ 1M)
+    → x ≡ y
 ```
 
 This is a happy theorem where stating the assumptions takes as many
@@ -164,11 +177,26 @@ an identity for $\star$, we can freely multiply by $1$ to "sneak in" a
 $y$:
 
 ```agda
-monoid-inverse-unique {1M = 1M} {_⋆_} m e x y li1 ri2 =
-  x             ≡⟨ sym (m .idr) ⟩
-  x ⋆ ⌜ 1M ⌝    ≡˘⟨ ap¡ ri2 ⟩
-  x ⋆ (e ⋆ y)   ≡⟨ m .associative ⟩
-  ⌜ x ⋆ e ⌝ ⋆ y ≡⟨ ap! li1 ⟩
-  1M ⋆ y        ≡⟨ m .idl ⟩
-  y             ∎
+  monoid-inverse-unique e x y li1 ri2 =
+    x             ≡⟨ sym (m .idr) ⟩
+    x ⋆ ⌜ 1M ⌝    ≡˘⟨ ap¡ ri2 ⟩
+    x ⋆ (e ⋆ y)   ≡⟨ m .associative ⟩
+    ⌜ x ⋆ e ⌝ ⋆ y ≡⟨ ap! li1 ⟩
+    1M ⋆ y        ≡⟨ m .idl ⟩
+    y             ∎
+```
+
+```agda
+
+
+instance
+  H-Level-has-monoid-inverse : ∀ {1M : A} {_⋆_ : A → A → A}
+                                {m : is-monoid 1M _⋆_} {x : A} {n : Nat}
+                               → H-Level (has-monoid-inverse m x) (suc n)
+  H-Level-has-monoid-inverse {1M} {m = m} = prop-instance (Iso→is-hlevel 1 eqv' eqv'prop) where
+    private unquoteDecl eqv' = declare-record-iso eqv' (quote has-monoid-inverse)
+    eqv'prop : is-hlevel _ 1
+    eqv'prop (y1 , l , r) (y2 , l' , r')
+      = Σ-path (sym $ monoid-inverse-unique m _ _ _ r' l)
+               let open is-monoid m in prop!
 ```
