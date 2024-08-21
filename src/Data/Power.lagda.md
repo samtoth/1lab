@@ -251,6 +251,12 @@ preimage-⊆→direct-image-⊆ U V U⊆f⁻¹[V] y =
 ⋂ : ∀ {κ : Level} {I : Type κ} → (I → ℙ X) → ℙ X
 ⋂ {I = I} A x = ∀Ω[ i ∈ I ] A i x
 
+⋂-⊆ : ∀ {κ} {I : Type κ}
+    → (Uᵢ : I → ℙ X) (V : ℙ X)
+    → V ⊆ ⋂ Uᵢ
+    → (∀ i → V ⊆ Uᵢ i)
+⋂-⊆ Uᵢ V V⊆Ui i a a∈V = rec! (λ x → x i) (V⊆Ui a a∈V)
+
 _ᶜ : ℙ X → ℙ X
 (A ᶜ) x = ¬Ω (A x)
 

@@ -15,7 +15,7 @@ open import Topology.Base
 ```
 -->
 ```agda
-module Topology.Instances.Equaliser where
+module Topology.Instances.Complete where
 ```
 
 # The category of topological spaces is complete
@@ -50,6 +50,6 @@ Topologies-is-complete {o = o} {J} F = to-limit (to-is-limit lim) where
                                              (⋃-universal {Tᵢ = λ j → Induced (ψ j) (F.₀ j .snd)} (λ j → 
                                               induced-universal (eps₁ j .preserves)))
   lim .make-is-limit.factors eps₁ p = trivial!
-  lim .make-is-limit.unique eps₁ p other x = ext (happly (unique (λ j → eps₁ j .hom) (λ f → ap (λ r → hom r) (p f)) (other .hom) λ j → ap hom (x j)))
+  lim .make-is-limit.unique eps₁ p other x = ext (happly (unique (λ j → eps₁ j .hom) (λ f → ap hom (p f)) (other .hom) λ j → ap hom (x j)))
 
 ```

@@ -112,6 +112,17 @@ As an easy corollary, the empty set is also open.
       (⋃-minimal (λ _ → maximal))
       (⋃-open (λ _ → maximal) (λ _ → maximal-open))
 ```
+<!--
+```agda
+⋃-open→⋃ˢ-open : ∀ {ℓ} {X : Type ℓ} (Opens : ℙ (ℙ X))
+                 → (∀ {κ} {I : Type κ}
+                  → (Uᵢ : I → ℙ X) → (∀ i → Uᵢ i ∈ Opens)
+                  → ⋃ Uᵢ ∈ Opens)
+               → ∀ (S : ℙ (ℙ X)) → S ⊆ Opens → ⋃ˢ S ∈ Opens
+⋃-open→⋃ˢ-open Opens x S S⊆Opens = x fst (λ p → S⊆Opens (fst p) (snd p))
+
+```
+-->
 
 We pause to note that paths between topologies are relatively easy to
 characterise: if two topologies on $X$ have the same sets of opens, then
