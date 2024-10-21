@@ -37,6 +37,7 @@ open import Cat.Diagram.Colimit.Cocone
 open import Cat.Diagram.Limit.Pullback
 open import Cat.Functor.Hom.Properties
 open import Cat.Instances.Localisation
+open import Cat.Instances.MarkedGraphs
 open import Cat.Instances.OuterFunctor
 open import Cat.Internal.Functor.Outer
 open import Cat.Morphism.Factorisation
@@ -48,6 +49,7 @@ open import Cat.Diagram.Limit.Finite
 open import Cat.Functor.Conservative
 open import Cat.Functor.Hom.Coyoneda
 open import Cat.Diagram.Coequaliser
+open import Cat.Functor.Adjoint.AFT
 open import Cat.Functor.Adjoint.Hom
 open import Cat.Functor.Adjoint.Kan
 open import Cat.Functor.Equivalence
@@ -75,6 +77,7 @@ open import Cat.Diagram.Terminal
 open import Cat.Functor.Constant
 open import Cat.Functor.Kan.Base
 open import Cat.Functor.Morphism
+open import Cat.Instances.Graphs
 open import Cat.Diagram.Initial
 open import Cat.Diagram.Product
 open import Cat.Diagram.Pushout
@@ -668,6 +671,16 @@ _ = right-adjoint-is-continuous
 
 ### 3.3 The adjoint functor theorem
 
+<!--
+```agda
+_ = Solution-set
+_ = solution-set→left-adjoint
+```
+-->
+
+* Definition 3.3.2: `Solution-set`{.Agda}
+* Theorem 3.3.3: `solution-set→left-adjoint`{.Agda}
+
 ### 3.4 Fully faithful adjoint functors
 
 <!--
@@ -887,14 +900,22 @@ _ = zero+indexed-coproduct-strong-projective→strong-projective
 <!--
 ```agda
 _ = Graph
+_ = Graph-hom
 _ = Path-in
 _ = Path-category
+_ = Free-category
+_ = Marked-graph
+_ = Marked-graphs
+_ = Marked-free-category
 ```
 -->
 
 * Definition 5.1.1: `Graph`{.Agda}
+* Definition 5.1.2: `Graph-hom`{.Agda}
 * Definition 5.1.3: `Path-in`{.Agda}
-* Proposition 5.1.4: `Path-category`{.Agda}
+* Proposition 5.1.4: `Path-category`{.Agda}, `Free-category`{.Agda}
+* Definition 5.1.5: `Marked-graph`{.Agda}, `Marked-graphs`{.Agda}
+* Proposition 5.1.6: `Marked-free-category`{.Agda}
 
 ### 5.2 Calculus of fractions
 
