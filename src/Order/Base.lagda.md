@@ -300,6 +300,17 @@ _^opp : ∀ {ℓ ℓ'} → Poset ℓ ℓ' → Poset ℓ ℓ'
 (P ^opp) .Poset.≤-antisym x≥y y≥x = Poset.≤-antisym P y≥x x≥y
 ```
 
+```agda
+F-opp : ∀ {o o' ℓ ℓ'} {P : Poset o ℓ} {Q : Poset o' ℓ'}
+        → Monotone P Q → Monotone (P ^opp) (Q ^opp)
+F-opp F .hom = F .hom
+F-opp F .pres-≤ p = F .pres-≤ p
+
+F-opp-id : ∀ {o ℓ} {P : Poset o ℓ}
+        → F-opp {P = P} idₘ ≡ idₘ
+F-opp-id = ext (λ _ → refl)
+```
+
 We can construct the trivial posets with one and zero (object(s), ordering(s)) respectively
 
 ```agda

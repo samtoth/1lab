@@ -3,10 +3,12 @@
 open import Cat.Instances.StrictCat
 open import Cat.Instances.Functor
 open import Cat.Prelude
+open import Cat.Univalent
 
 open import Order.Base
 
 import Order.Reasoning
+import Cat.Morphism
 
 open Precategory
 ```
@@ -48,6 +50,19 @@ poset→category P = cat module poset-to-category where
   cat .Hom-set x y = is-prop→is-set P.≤-thin
 
 {-# DISPLAY poset-to-category.cat P = poset→category P #-}
+
+poset→category-is-cat : ∀ {ℓ ℓ'} → (P : Poset ℓ ℓ')
+                      → is-category (poset→category P)
+poset→category-is-cat P = equiv-path→identity-system (Iso→Equiv the-iso) where
+  module P = Poset P
+  open Cat.Morphism (poset→category P)
+
+  the-iso : ∀ {a b} → Iso (Isomorphism a b) (a ≡ b)
+  the-iso .fst f = P.≤-antisym (f . to) (f .from)
+  the-iso .snd .is-iso.inv p = subst (λ x → Isomorphism _ x) p id-iso
+  the-iso .snd .is-iso.rinv _ = prop!
+  the-iso .snd .is-iso.linv _ = ≅-is-prop P.≤-thin _ _
+  
 
 poset→thin : ∀ {ℓ ℓ'} (P : Poset ℓ ℓ') → is-thin (poset→category P)
 poset→thin P _ _ = P.≤-thin where module P = Poset P
@@ -93,3 +108,44 @@ module
   thin-functor f f₁ .F-id = D-thin _ _ _ _
   thin-functor f f₁ .F-∘ _ _ = D-thin _ _ _ _
 ```
+
+Conversely a thin, univalent category is a poset
+
+```agda
+module _ {o ℓ} (C : Precategory o ℓ) (cat : is-category C)
+  (thin : is-thin C) where
+  
+  thin→poset : Poset o ℓ
+  thin→poset = p where
+    module C = Precategory C
+    open Univalent' cat
+    -- instance
+    --   H-Level-hom : 
+        
+    p : Poset _ _
+    p .Poset.Ob = C.Ob
+    p .Poset._≤_ = C.Hom
+    p .Poset.≤-thin = thin _ _
+    p .Poset.≤-refl = C.id
+    p .Poset.≤-trans f g = g C.∘ f
+    p .Poset.≤-antisym f g = iso→path (record {
+      to = f ; from = g ;
+      inverses = record { invl = thin _ _ _ _ ; invr = thin _ _ _ _ } })
+
+  thin→poset-factors : ∀ {o' ℓ'} (D : Poset o' ℓ') 
+    → Functor C (poset→category D)
+    → Monotone thin→poset D
+  thin→poset-factors D F = m where
+    m : Monotone thin→poset D
+    m .hom = F .F₀
+    m .pres-≤ = F .F₁
+
+  thin→poset-factors^op : ∀ {o' ℓ'} (D : Poset o' ℓ') 
+    → Functor (C ^op) (poset→category D)
+    → Monotone (thin→poset ^opp) D
+  thin→poset-factors^op D F = m where
+    m : Monotone (thin→poset ^opp) D
+    m .hom = F .F₀
+    m .pres-≤ = F .F₁
+   
+``` 
